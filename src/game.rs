@@ -76,11 +76,14 @@ impl Turn {
         };
 
         for state in orthogonally_adjacent_states(&self.intersection, board) {
-            if let Some(State::Stone(stone)) = state {
-                if stone != opponent {
-                    return false;
+            match state {
+                Some(State::Stone(stone)) => {
+                    if stone != opponent {
+                        return false;
+                    }
                 }
-            }
+                _ => return false,
+            };
         }
 
         true

@@ -19,8 +19,6 @@ mod tests {
            stone: Stone::White,
        };
 
-       b.update(t);
-
        assert_eq!(orthogonally_adjacent_states(&(4, 5), &b)[1], Some(State::Stone(Stone::White)));
     }
 
