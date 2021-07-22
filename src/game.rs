@@ -62,19 +62,14 @@ impl Board {
     }
 }
 
-pub fn orthogonally_adjacent_states(intersection: &Intersection, board: &Board) -> Vec<State> {
-    let mut adjacent_states = Vec::<State>::new();
+pub fn orthogonally_adjacent_states(intersection: &Intersection, board: &Board) -> Vec<Option<State>> {
+    let mut adjacent_states = Vec::<Option<State>>::new();
 
     let operations: Vec<i8> = vec![-1, 1];
 
     for operation in operations {
-        if let Some(state) = board.read((intersection.0 + operation, intersection.1)) {
-            adjacent_states.push(state);
-        }
-
-        if let Some(state) = board.read((intersection.0, intersection.1 + operation)) {
-            adjacent_states.push(state);
-        }
+        adjacent_states.push(board.read((intersection.0 + operation, intersection.1)));
+        adjacent_states.push(board.read((intersection.0, intersection.1 + operation)));
     }
 
     adjacent_states
