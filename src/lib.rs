@@ -8,7 +8,7 @@ mod tests {
     use crate::game::Illegal::OutOfBounds;
 
     #[test]
-    fn can_read_orthogonal_intersections() {
+    fn can_read_orthogonal_states() {
        let mut b = Board {
            board_states: HashMap::new(),
            size: 9,
@@ -21,7 +21,7 @@ mod tests {
 
        b.update(t);
 
-       println!("{:?}", orthogonally_adjacent_states(&(4, 5), &b));
+       assert_eq!(orthogonally_adjacent_states(&(4, 5), &b)[1], Some(State::Stone(Stone::White)));
     }
 
     #[test]
