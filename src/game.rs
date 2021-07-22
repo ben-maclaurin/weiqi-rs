@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::game::Illegal::OutOfBounds;
+use crate::game::Illegal::{OutOfBounds, Suicide};
 use crate::game::TurnResult::Legal;
 
 #[derive(Debug, PartialEq)]
@@ -17,6 +17,7 @@ pub enum State {
 #[derive(Debug, PartialEq)]
 pub enum Illegal {
     OutOfBounds,
+    Suicide,
 }
 
 #[derive(Debug, PartialEq)]
@@ -41,11 +42,16 @@ pub struct Board {
 
 impl Board {
     pub fn update(&mut self, turn: Turn) -> TurnResult {
-        if is_within_bounds(&turn.intersection, &self.size) {
-            self.board_states.insert((turn.intersection.0, turn.intersection.1), State::Stone(turn.stone));
-            return Legal;
+        if !is_within_bounds(&turn.intersection, &self.size) {
+            return TurnResult::Illegal(OutOfBounds);
         }
-        TurnResult::Illegal(OutOfBounds)
+
+        if turn.is_suicide(&self) {
+            return TurnResult::Illegal(Suicide);
+        }
+
+        self.board_states.insert((turn.intersection.0, turn.intersection.1), State::Stone(turn.stone));
+        Legal
     }
 
     pub(crate) fn read(&self, intersection: Intersection) -> Option<State> {
@@ -54,11 +60,30 @@ impl Board {
                 return match stone {
                     Stone::Black => Some(State::Stone(Stone::Black)),
                     _ => Some(State::Stone(Stone::White))
-                }
+                };
             }
             return Some(State::Vacant);
         }
         None
+    }
+}
+
+impl Turn {
+    pub fn is_suicide(&self, board: &Board) -> bool {
+        let opponent = match &self.stone {
+            Stone::Black => Stone::White,
+            _ => Stone::Black,
+        };
+
+        for state in orthogonally_adjacent_states(&self.intersection, board) {
+            if let Some(State::Stone(stone)) = state {
+                if stone != opponent {
+                    return false;
+                }
+            }
+        }
+
+        true
     }
 }
 
