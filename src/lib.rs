@@ -3,7 +3,7 @@ mod game;
 
 #[cfg(test)]
 mod tests {
-    use crate::game::{Board, Turn, Stone, State, TurnResult, orthogonally_adjacent_states};
+    use crate::game::{Board, Stone, State, orthogonally_adjacent_states, Move, Outcome};
     use std::collections::HashMap;
     use crate::game::Illegal::OutOfBounds;
 
@@ -14,10 +14,12 @@ mod tests {
            size: 9,
        };
 
-       let t = Turn {
+       let m = Move {
            intersection: (4, 4),
            stone: Stone::White,
        };
+
+       b.update(m);
 
        assert_eq!(orthogonally_adjacent_states(&(4, 5), &b)[1], Some(State::Stone(Stone::White)));
     }
@@ -29,12 +31,12 @@ mod tests {
             size: 9,
         };
 
-        let t = Turn {
+        let m = Move {
             intersection: (10, 10),
             stone: Stone::Black,
         };
 
-        assert_eq!(b.update(t), TurnResult::Illegal(OutOfBounds))
+        assert_eq!(b.update(m), Outcome::Illegal(OutOfBounds))
     }
 
     #[test]
@@ -44,12 +46,12 @@ mod tests {
             size: 9,
         };
 
-        let t = Turn {
+        let m = Move {
             intersection: (3, 3),
             stone: Stone::Black,
         };
 
-        b.update(t);
+        b.update(m);
 
         assert_eq!(b.read((3, 3)), Some(State::Stone(Stone::Black)));
     }
