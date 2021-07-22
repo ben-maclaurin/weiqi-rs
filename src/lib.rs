@@ -3,9 +3,32 @@ mod game;
 
 #[cfg(test)]
 mod tests {
-    use crate::game::{Board, Stone, State, orthogonally_adjacent_states, Move, Outcome};
+    use crate::game::{Board, Stone, State, orthogonally_adjacent_states, Move, Outcome, Illegal};
     use std::collections::HashMap;
-    use crate::game::Illegal::OutOfBounds;
+    use crate::game::Illegal::{OutOfBounds};
+    use crate::game::Rule::RepeatMove;
+
+    #[test]
+    fn cannot_make_repeat_move() {
+        let mut b = Board {
+            board_states: HashMap::new(),
+            size: 9,
+        };
+
+        let m = Move {
+            intersection: (1, 1),
+            stone: Stone::White,
+        };
+
+        b.update(m);
+
+        let m = Move {
+            intersection: (1, 1),
+            stone: Stone::White,
+        };
+
+        assert_eq!(b.update(m), Outcome::Illegal(Illegal::Rule(RepeatMove)))
+    }
 
     #[test]
     fn can_read_orthogonal_states() {

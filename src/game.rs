@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use crate::game::Illegal::{OutOfBounds};
 use crate::game::Outcome::Legal;
-use crate::game::Rule::Suicide;
+use crate::game::Rule::{Suicide, RepeatMove};
 
 #[derive(Debug, PartialEq)]
 pub enum Stone {
@@ -18,6 +18,7 @@ pub enum State {
 #[derive(Debug, PartialEq)]
 pub enum Rule {
     Suicide,
+    RepeatMove,
 }
 
 #[derive(Debug, PartialEq)]
@@ -56,6 +57,10 @@ impl Board {
             return Outcome::Illegal(Illegal::Rule(Suicide));
         }
 
+        if mov.is_repeat(&self) {
+            return Outcome::Illegal(Illegal::Rule(RepeatMove));
+        }
+
         self.board_states.insert((mov.intersection.0, mov.intersection.1), State::Stone(mov.stone));
         Legal
     }
@@ -75,6 +80,13 @@ impl Board {
 }
 
 impl Move {
+    pub fn is_repeat(&self, board: &Board) -> bool {
+        if let Some(State::Stone(_stone)) = &board.read(self.intersection) {
+           return true;
+        }
+        false
+    }
+
     pub fn is_suicide(&self, board: &Board) -> bool {
         let opponent = match &self.stone {
             Stone::Black => Stone::White,
