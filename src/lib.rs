@@ -3,9 +3,26 @@ mod game;
 
 #[cfg(test)]
 mod tests {
-    use crate::game::{Board, Turn, Stone, State, TurnResult};
+    use crate::game::{Board, Turn, Stone, State, TurnResult, orthogonally_adjacent_states};
     use std::collections::HashMap;
     use crate::game::Illegal::OutOfBounds;
+
+    #[test]
+    fn can_read_orthogonal_intersections() {
+       let mut b = Board {
+           board_states: HashMap::new(),
+           size: 9,
+       };
+
+       let t = Turn {
+           intersection: (4, 4),
+           stone: Stone::White,
+       };
+
+       b.update(t);
+
+       println!("{:?}", orthogonally_adjacent_states(&(4, 5), &b));
+    }
 
     #[test]
     fn cannot_move_out_of_bounds() {

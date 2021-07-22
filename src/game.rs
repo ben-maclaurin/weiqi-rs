@@ -25,9 +25,9 @@ pub enum TurnResult {
     Legal,
 }
 
-type BoardStates = HashMap<(u8, u8), State>;
-type Intersection = (u8, u8);
-type BoardSize = u8;
+type BoardStates = HashMap<(i8, i8), State>;
+type Intersection = (i8, i8);
+type BoardSize = i8;
 
 pub struct Turn {
     pub intersection: Intersection,
@@ -36,7 +36,7 @@ pub struct Turn {
 
 pub struct Board {
     pub board_states: BoardStates,
-    pub size: u8,
+    pub size: BoardSize,
 }
 
 impl Board {
@@ -60,6 +60,24 @@ impl Board {
         }
         None
     }
+}
+
+pub fn orthogonally_adjacent_states(intersection: &Intersection, board: &Board) -> Vec<State> {
+    let mut adjacent_states = Vec::<State>::new();
+
+    let operations: Vec<i8> = vec![-1, 1];
+
+    for operation in operations {
+        if let Some(state) = board.read((intersection.0 + operation, intersection.1)) {
+            adjacent_states.push(state);
+        }
+
+        if let Some(state) = board.read((intersection.0, intersection.1 + operation)) {
+            adjacent_states.push(state);
+        }
+    }
+
+    adjacent_states
 }
 
 fn is_within_bounds(intersection: &Intersection, size: &BoardSize) -> bool {
