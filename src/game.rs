@@ -47,18 +47,15 @@ pub struct Group {
     moves: Vec<Move>,
 }
 
-pub struct Groups {
-    groups: Vec<Groups>,
-}
-
 pub struct Board {
     pub board_states: BoardStates,
     pub size: BoardSize,
+    pub groups: Vec<Group>,
 }
 
 impl Board {
     pub fn update(&mut self, mov: Move) -> Outcome {
-        if let Outcome::Illegal(illegal) = mov.is_forbidden(&self) {
+        if let Outcome::Illegal(illegal) = mov.is_prohibited(&self) {
             return Outcome::Illegal(illegal);
         }
 
@@ -80,9 +77,13 @@ impl Board {
     }
 }
 
+pub fn connect_move(board: &Board, mov: &Move) {
+    let mut connected: bool = false;
+
+}
 
 impl Group {
-    pub fn move_is_local(&self, mov: &Move, board: &Board) -> bool {
+    pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
         for m in &self.moves {
             for state in orthogonally_adjacent_states(&m.intersection, board) {
                 if let Some(State::Stone(stone)) = state {
@@ -105,19 +106,10 @@ impl Group {
         }
         false
     }
-
-    pub fn contains_move(&self, mov: &Move) -> bool {
-        for m in &self.moves {
-            if m == mov {
-                return true;
-            }
-        }
-        false
-    }
 }
 
 impl Move {
-    pub fn is_forbidden(&self, board: &Board) -> Outcome {
+    pub fn is_prohibited(&self, board: &Board) -> Outcome {
         if !is_within_bounds(&self.intersection, &board.size) {
             return Outcome::Illegal(OutOfBounds);
         }
