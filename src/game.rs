@@ -42,6 +42,10 @@ pub struct Move {
     pub stone: Stone,
 }
 
+pub struct Group {
+    moves: Vec<Move>,
+}
+
 pub struct Board {
     pub board_states: BoardStates,
     pub size: BoardSize,
@@ -49,16 +53,8 @@ pub struct Board {
 
 impl Board {
     pub fn update(&mut self, mov: Move) -> Outcome {
-        if !is_within_bounds(&mov.intersection, &self.size) {
-            return Outcome::Illegal(OutOfBounds);
-        }
-
-        if mov.is_suicide(&self) {
-            return Outcome::Illegal(Illegal::Rule(Suicide));
-        }
-
-        if mov.is_repeat(&self) {
-            return Outcome::Illegal(Illegal::Rule(RepeatMove));
+        if let Outcome::Illegal(illegal) = mov.is_forbidden(&self) {
+           return Outcome::Illegal(illegal);
         }
 
         self.board_states.insert((mov.intersection.0, mov.intersection.1), State::Stone(mov.stone));
@@ -80,6 +76,22 @@ impl Board {
 }
 
 impl Move {
+    pub fn is_forbidden(&self, board: &Board) -> Outcome {
+        if !is_within_bounds(&self.intersection, &board.size) {
+            return Outcome::Illegal(OutOfBounds);
+        }
+
+        if self.is_suicide(&board) {
+            return Outcome::Illegal(Illegal::Rule(Suicide));
+        }
+
+        if self.is_repeat(&board) {
+            return Outcome::Illegal(Illegal::Rule(RepeatMove));
+        }
+
+       Legal
+    }
+
     pub fn is_repeat(&self, board: &Board) -> bool {
         if let Some(State::Stone(_stone)) = &board.read(self.intersection) {
            return true;
