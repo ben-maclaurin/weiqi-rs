@@ -95,6 +95,17 @@ impl Group {
         false
     }
 
+    pub fn has_liberties(&self, board: &Board) -> bool {
+        for m in &self.moves {
+            for state in orthogonally_adjacent_states(&m.intersection, &board) {
+                if let Some(State::Vacant) = state {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
     pub fn contains_move(&self, mov: &Move) -> bool {
         for m in &self.moves {
             if m == mov {
