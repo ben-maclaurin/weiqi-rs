@@ -33,8 +33,8 @@ pub enum Outcome {
     Legal,
 }
 
-type BoardStates = HashMap<(i8, i8), State>;
 type Intersection = (i8, i8);
+type BoardStates = HashMap<Intersection, State>;
 type BoardSize = i8;
 
 #[derive(PartialEq)]
