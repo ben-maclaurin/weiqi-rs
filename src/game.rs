@@ -47,6 +47,10 @@ pub struct Group {
     moves: Vec<Move>,
 }
 
+pub struct Groups {
+    groups: Vec<Groups>,
+}
+
 pub struct Board {
     pub board_states: BoardStates,
     pub size: BoardSize,
@@ -55,7 +59,7 @@ pub struct Board {
 impl Board {
     pub fn update(&mut self, mov: Move) -> Outcome {
         if let Outcome::Illegal(illegal) = mov.is_forbidden(&self) {
-           return Outcome::Illegal(illegal);
+            return Outcome::Illegal(illegal);
         }
 
         self.board_states.insert((mov.intersection.0, mov.intersection.1), State::Stone(mov.stone));
@@ -76,14 +80,27 @@ impl Board {
     }
 }
 
+
 impl Group {
+    pub fn move_is_local(&self, mov: &Move, board: &Board) -> bool {
+        for m in &self.moves {
+            for state in orthogonally_adjacent_states(&m.intersection, board) {
+                if let Some(State::Stone(stone)) = state {
+                    if mov.stone == stone {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
+    }
+
     pub fn contains_move(&self, mov: &Move) -> bool {
         for m in &self.moves {
             if m == mov {
                 return true;
             }
         }
-
         false
     }
 }
@@ -94,7 +111,7 @@ impl Move {
             return Outcome::Illegal(OutOfBounds);
         }
 
-        if self.is_suicide(&board) {
+        if !self.has_liberties_or_allies(&board) {
             return Outcome::Illegal(Illegal::Rule(Suicide));
         }
 
@@ -102,17 +119,17 @@ impl Move {
             return Outcome::Illegal(Illegal::Rule(RepeatMove));
         }
 
-       Legal
+        Legal
     }
 
     pub fn is_repeat(&self, board: &Board) -> bool {
         if let Some(State::Stone(_stone)) = &board.read(self.intersection) {
-           return true;
+            return true;
         }
         false
     }
 
-    pub fn is_suicide(&self, board: &Board) -> bool {
+    pub fn has_liberties_or_allies(&self, board: &Board) -> bool {
         let opponent = match &self.stone {
             Stone::Black => Stone::White,
             _ => Stone::Black,
@@ -122,14 +139,14 @@ impl Move {
             match state {
                 Some(State::Stone(stone)) => {
                     if stone != opponent {
-                        return false;
+                        return true;
                     }
                 }
-                _ => return false,
+                _ => return true,
             };
         }
 
-        true
+        false
     }
 }
 
