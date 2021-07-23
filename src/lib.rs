@@ -3,7 +3,7 @@ mod game;
 
 #[cfg(test)]
 mod tests {
-    use crate::game::{Board, Stone, State, orthogonally_adjacent_states, Move, Outcome, Illegal, Group};
+    use crate::game::{Board, Stone, State, Move, Outcome, Illegal, Group, adjacent_states};
     use std::collections::HashMap;
     use crate::game::Illegal::{OutOfBounds};
     use crate::game::Rule::{RepeatMove, Suicide};
@@ -90,7 +90,7 @@ mod tests {
 
        b.update(m);
 
-       assert_eq!(orthogonally_adjacent_states(&(4, 5), &b)[1], Some(State::Stone(Stone::White)));
+       assert_eq!(adjacent_states(&(4, 5), &b)[1], Some(State::Stone(Stone::White)));
     }
 
     #[test]
