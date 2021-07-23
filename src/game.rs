@@ -85,7 +85,7 @@ pub fn connect_move(board: &Board, mov: &Move) {
 impl Group {
     pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
         for m in &self.moves {
-            for state in orthogonally_adjacent_states(&m.intersection, board) {
+            for state in adjacent_states(&m.intersection, board) {
                 if let Some(State::Stone(stone)) = state {
                     if mov.stone == stone {
                         return true;
@@ -98,7 +98,7 @@ impl Group {
 
     pub fn has_liberties(&self, board: &Board) -> bool {
         for m in &self.moves {
-            for state in orthogonally_adjacent_states(&m.intersection, &board) {
+            for state in adjacent_states(&m.intersection, &board) {
                 if let Some(State::Vacant) = state {
                     return true;
                 }
@@ -138,7 +138,7 @@ impl Move {
             _ => Stone::Black,
         };
 
-        for state in orthogonally_adjacent_states(&self.intersection, board) {
+        for state in adjacent_states(&self.intersection, board) {
             match state {
                 Some(State::Stone(stone)) => {
                     if stone != opponent {
@@ -153,17 +153,17 @@ impl Move {
     }
 }
 
-pub fn orthogonally_adjacent_states(intersection: &Intersection, board: &Board) -> Vec<Option<State>> {
-    let mut adjacent_states = Vec::<Option<State>>::new();
+pub fn adjacent_states(intersection: &Intersection, board: &Board) -> Vec<Option<State>> {
+    let mut states = Vec::<Option<State>>::new();
 
     let operations: Vec<i8> = vec![-1, 1];
 
     for operation in operations {
-        adjacent_states.push(board.read((intersection.0 + operation, intersection.1)));
-        adjacent_states.push(board.read((intersection.0, intersection.1 + operation)));
+        states.push(board.read((intersection.0 + operation, intersection.1)));
+        states.push(board.read((intersection.0, intersection.1 + operation)));
     }
 
-    adjacent_states
+    states
 }
 
 fn is_within_bounds(intersection: &Intersection, size: &BoardSize) -> bool {
