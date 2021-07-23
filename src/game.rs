@@ -126,7 +126,7 @@ impl Move {
     }
 
     pub fn is_repeat(&self, board: &Board) -> bool {
-        if let Some(State::Stone(_stone)) = &board.read(self.intersection) {
+        if let Some(State::Stone(_)) = &board.read(self.intersection) {
             return true;
         }
         false
