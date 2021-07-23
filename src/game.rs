@@ -37,6 +37,7 @@ type BoardStates = HashMap<(i8, i8), State>;
 type Intersection = (i8, i8);
 type BoardSize = i8;
 
+#[derive(PartialEq)]
 pub struct Move {
     pub intersection: Intersection,
     pub stone: Stone,
@@ -72,6 +73,18 @@ impl Board {
             return Some(State::Vacant);
         }
         None
+    }
+}
+
+impl Group {
+    pub fn contains_move(&self, mov: &Move) -> bool {
+        for m in &self.moves {
+            if m == mov {
+                return true;
+            }
+        }
+
+        false
     }
 }
 
