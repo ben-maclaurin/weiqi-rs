@@ -21,35 +21,35 @@ mod tests {
             stone: Stone::White,
         };
 
-        b.update(m);
+        b.update(&m);
 
         let m = Move {
             intersection: (4, 3),
             stone: Stone::White,
         };
 
-        b.update(m);
+        b.update(&m);
 
         let m = Move {
             intersection: (3, 4),
             stone: Stone::White,
         };
 
-        b.update(m);
+        b.update(&m);
 
         let m = Move {
             intersection: (2, 3),
             stone: Stone::White,
         };
 
-        b.update(m);
+        b.update(&m);
 
         let m = Move {
             intersection: (3, 3),
             stone: Stone::Black,
         };
 
-        assert_eq!(b.update(m), Outcome::Illegal(Illegal::Rule(Suicide)))
+        assert_eq!(b.update(&m), Outcome::Illegal(Illegal::Rule(Suicide)))
     }
 
     #[test]
@@ -65,14 +65,14 @@ mod tests {
             stone: Stone::White,
         };
 
-        b.update(m);
+        b.update(&m);
 
         let m = Move {
             intersection: (1, 1),
             stone: Stone::White,
         };
 
-        assert_eq!(b.update(m), Outcome::Illegal(Illegal::Rule(RepeatMove)))
+        assert_eq!(b.update(&m), Outcome::Illegal(Illegal::Rule(RepeatMove)))
     }
 
     #[test]
@@ -88,11 +88,11 @@ mod tests {
             stone: Stone::White,
         };
 
-        b.update(m);
+        b.update(&m);
 
         assert_eq!(
             adjacent_states(&(4, 5), &b)[1],
-            Some(State::Stone(Stone::White))
+            Some(State::Stone(&Stone::White))
         );
     }
 
@@ -109,7 +109,7 @@ mod tests {
             stone: Stone::Black,
         };
 
-        assert_eq!(b.update(m), Outcome::Illegal(OutOfBounds))
+        assert_eq!(b.update(&m), Outcome::Illegal(OutOfBounds))
     }
 
     #[test]
@@ -125,8 +125,8 @@ mod tests {
             stone: Stone::Black,
         };
 
-        b.update(m);
+        b.update(&m);
 
-        assert_eq!(b.read((3, 3)), Some(State::Stone(Stone::Black)));
+        assert_eq!(b.read((3, 3)), Some(State::Stone(&Stone::Black)));
     }
 }

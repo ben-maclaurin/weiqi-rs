@@ -10,9 +10,9 @@ pub enum Stone {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum State {
+pub enum State<'a> {
     Vacant,
-    Stone(Stone),
+    Stone(&'a Stone),
 }
 
 #[derive(Debug, PartialEq)]
@@ -34,7 +34,7 @@ pub enum Outcome {
 }
 
 type Intersection = (i8, i8);
-type BoardStates = HashMap<Intersection, State>;
+type BoardStates<'a> = HashMap<Intersection, State<'a>>;
 type BoardSize = i8;
 
 #[derive(PartialEq)]
@@ -48,24 +48,28 @@ pub struct Chain<'a> {
 }
 
 pub struct Board<'a> {
-    pub board_states: BoardStates,
+    pub board_states: BoardStates<'a>,
     pub size: BoardSize,
     pub chains: Vec<Chain<'a>>,
 }
 
 impl<'a> Board<'a> {
-    pub fn update(&mut self, mov: Move) -> Outcome {
+    pub fn update(&mut self, mov: &'a Move) -> Outcome {
         if let Outcome::Illegal(illegal) = mov.is_prohibited(&self) {
             return Outcome::Illegal(illegal);
         }
 
         if let Some(mut chain) = can_connect_move(self, &mov) {
             chain.moves.push(&mov);
+        } else {
+            self.chains.push( Chain {
+                moves: vec![&mov],
+            })
         }
 
         self.board_states.insert(
             (mov.intersection.0, mov.intersection.1),
-            State::Stone(mov.stone),
+            State::Stone(&mov.stone),
         );
         Legal
     }
@@ -76,8 +80,8 @@ impl<'a> Board<'a> {
                 &self.board_states.get(&(intersection.0, intersection.1))
             {
                 return match stone {
-                    Stone::Black => Some(State::Stone(Stone::Black)),
-                    _ => Some(State::Stone(Stone::White)),
+                    Stone::Black => Some(State::Stone(&Stone::Black)),
+                    _ => Some(State::Stone(&Stone::White)),
                 };
             }
             return Some(State::Vacant);
@@ -86,7 +90,7 @@ impl<'a> Board<'a> {
     }
 }
 
-pub fn can_connect_move<'a>(board: &mut Board<'a>, mov: &Move) -> Option<Chain<'a>> {
+pub fn can_connect_move<'a>(board: &mut Board<'a>, mov: &'a Move) -> Option<Chain<'a>> {
     for c in &board.chains {
         if let Some(chain) = c.move_is_connected(&mov, &board) {
             return Some(chain);
@@ -101,7 +105,7 @@ impl<'a> Chain<'a> {
         for m in &self.moves {
             for state in adjacent_states(&m.intersection, board) {
                 if let Some(State::Stone(stone)) = state {
-                    if mov.stone == stone {
+                    if &mov.stone == stone {
                         Some(self);
                     }
                 }
@@ -155,7 +159,7 @@ impl Move {
         for state in adjacent_states(&self.intersection, board) {
             match state {
                 Some(State::Stone(stone)) => {
-                    if stone != opponent {
+                    if stone != &opponent {
                         return true;
                     }
                 }
@@ -167,7 +171,7 @@ impl Move {
     }
 }
 
-pub fn adjacent_states(intersection: &Intersection, board: &Board) -> Vec<Option<State>> {
+pub fn adjacent_states<'a>(intersection: &Intersection, board: &'a Board<'a>) -> Vec<Option<State<'a>>> {
     let mut states = Vec::<Option<State>>::new();
 
     let operations: Vec<i8> = vec![-1, 1];
