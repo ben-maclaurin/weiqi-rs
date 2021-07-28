@@ -43,20 +43,24 @@ pub struct Move {
     pub stone: Stone,
 }
 
-pub struct Group {
+pub struct Chain {
     moves: Vec<Move>,
 }
 
 pub struct Board {
     pub board_states: BoardStates,
     pub size: BoardSize,
-    pub groups: Vec<Group>,
+    pub chains: Vec<Chain>,
 }
 
 impl Board {
     pub fn update(&mut self, mov: Move) -> Outcome {
         if let Outcome::Illegal(illegal) = mov.is_prohibited(&self) {
             return Outcome::Illegal(illegal);
+        }
+
+        if let Some(chain) = can_connect_move(self, &mov) {
+            chain
         }
 
         self.board_states.insert((mov.intersection.0, mov.intersection.1), State::Stone(mov.stone));
@@ -77,12 +81,17 @@ impl Board {
     }
 }
 
-pub fn connect_move(board: &Board, mov: &Move) {
-    let mut connected: bool = false;
+pub fn can_connect_move(board: &mut Board, mov: &Move) -> Option<&'a Chain> {
+    for mut c in &board.chains {
+        if c.move_is_connected(&mov, &board) {
+            return Some(c);
+        }
+    }
 
+    None
 }
 
-impl Group {
+impl Chain {
     pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
         for m in &self.moves {
             for state in adjacent_states(&m.intersection, board) {

@@ -3,7 +3,7 @@ mod game;
 
 #[cfg(test)]
 mod tests {
-    use crate::game::{Board, Stone, State, Move, Outcome, Illegal, Group, adjacent_states};
+    use crate::game::{Board, Stone, State, Move, Outcome, Illegal, adjacent_states, Chain};
     use std::collections::HashMap;
     use crate::game::Illegal::{OutOfBounds};
     use crate::game::Rule::{RepeatMove, Suicide};
@@ -13,7 +13,7 @@ mod tests {
         let mut b = Board {
             board_states: HashMap::new(),
             size: 9,
-            groups: Vec::<Group>::new(),
+            chains: Vec::<Chain>::new(),
         };
 
         let m = Move {
@@ -57,7 +57,7 @@ mod tests {
         let mut b = Board {
             board_states: HashMap::new(),
             size: 9,
-            groups: Vec::<Group>::new(),
+            chains: Vec::<Chain>::new(),
         };
 
         let m = Move {
@@ -80,7 +80,7 @@ mod tests {
        let mut b = Board {
            board_states: HashMap::new(),
            size: 9,
-           groups: Vec::<Group>::new(),
+           chains: Vec::<Chain>::new(),
        };
 
        let m = Move {
@@ -98,7 +98,7 @@ mod tests {
         let mut b = Board {
             board_states: HashMap::new(),
             size: 9,
-            groups: Vec::<Group>::new(),
+            chains: Vec::<Chain>::new(),
         };
 
         let m = Move {
@@ -114,7 +114,7 @@ mod tests {
         let mut b = Board {
             board_states: HashMap::new(),
             size: 9,
-            groups: Vec::<Group>::new(),
+            chains: Vec::<Chain>::new(),
         };
 
         let m = Move {
