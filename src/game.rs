@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-use crate::game::Illegal::{OutOfBounds};
+use crate::game::Illegal::OutOfBounds;
 use crate::game::Outcome::Legal;
-use crate::game::Rule::{Suicide, RepeatMove};
+use crate::game::Rule::{RepeatMove, Suicide};
+use std::collections::HashMap;
 
 #[derive(Debug, PartialEq)]
 pub enum Stone {
@@ -43,36 +43,41 @@ pub struct Move {
     pub stone: Stone,
 }
 
-pub struct Chain {
-    moves: Vec<Move>,
+pub struct Chain<'a> {
+    moves: Vec<&'a Move>,
 }
 
-pub struct Board {
+pub struct Board<'a> {
     pub board_states: BoardStates,
     pub size: BoardSize,
-    pub chains: Vec<Chain>,
+    pub chains: Vec<Chain<'a>>,
 }
 
-impl Board {
+impl<'a> Board<'a> {
     pub fn update(&mut self, mov: Move) -> Outcome {
         if let Outcome::Illegal(illegal) = mov.is_prohibited(&self) {
             return Outcome::Illegal(illegal);
         }
 
-        if let Some(chain) = can_connect_move(self, &mov) {
-            chain
+        if let Some(mut chain) = can_connect_move(self, &mov) {
+            chain.moves.push(&mov);
         }
 
-        self.board_states.insert((mov.intersection.0, mov.intersection.1), State::Stone(mov.stone));
+        self.board_states.insert(
+            (mov.intersection.0, mov.intersection.1),
+            State::Stone(mov.stone),
+        );
         Legal
     }
 
     pub(crate) fn read(&self, intersection: Intersection) -> Option<State> {
         if is_within_bounds(&intersection, &self.size) {
-            if let Some(State::Stone(stone)) = &self.board_states.get(&(intersection.0, intersection.1)) {
+            if let Some(State::Stone(stone)) =
+                &self.board_states.get(&(intersection.0, intersection.1))
+            {
                 return match stone {
                     Stone::Black => Some(State::Stone(Stone::Black)),
-                    _ => Some(State::Stone(Stone::White))
+                    _ => Some(State::Stone(Stone::White)),
                 };
             }
             return Some(State::Vacant);
@@ -81,28 +86,28 @@ impl Board {
     }
 }
 
-pub fn can_connect_move(board: &mut Board, mov: &Move) -> Option<&'a Chain> {
-    for mut c in &board.chains {
-        if c.move_is_connected(&mov, &board) {
-            return Some(c);
+pub fn can_connect_move<'a>(board: &mut Board<'a>, mov: &Move) -> Option<Chain<'a>> {
+    for c in &board.chains {
+        if let Some(chain) = c.move_is_connected(&mov, &board) {
+            return Some(chain);
         }
     }
 
     None
 }
 
-impl Chain {
-    pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
+impl<'a> Chain<'a> {
+    pub fn move_is_connected(&self, mov: &Move, board: &Board) -> Option<Self> {
         for m in &self.moves {
             for state in adjacent_states(&m.intersection, board) {
                 if let Some(State::Stone(stone)) = state {
                     if mov.stone == stone {
-                        return true;
+                        Some(self);
                     }
                 }
             }
         }
-        false
+        None
     }
 
     pub fn has_liberties(&self, board: &Board) -> bool {
@@ -176,7 +181,9 @@ pub fn adjacent_states(intersection: &Intersection, board: &Board) -> Vec<Option
 }
 
 fn is_within_bounds(intersection: &Intersection, size: &BoardSize) -> bool {
-    if (intersection.0 < 1 || intersection.1 < 1) || (intersection.0 > *size || intersection.1 > *size) {
+    if (intersection.0 < 1 || intersection.1 < 1)
+        || (intersection.0 > *size || intersection.1 > *size)
+    {
         return false;
     }
     true

@@ -3,10 +3,10 @@ mod game;
 
 #[cfg(test)]
 mod tests {
-    use crate::game::{Board, Stone, State, Move, Outcome, Illegal, adjacent_states, Chain};
-    use std::collections::HashMap;
-    use crate::game::Illegal::{OutOfBounds};
+    use crate::game::Illegal::OutOfBounds;
     use crate::game::Rule::{RepeatMove, Suicide};
+    use crate::game::{adjacent_states, Board, Chain, Illegal, Move, Outcome, State, Stone};
+    use std::collections::HashMap;
 
     #[test]
     fn cannot_make_suicidal_move() {
@@ -77,20 +77,23 @@ mod tests {
 
     #[test]
     fn can_read_orthogonal_states() {
-       let mut b = Board {
-           board_states: HashMap::new(),
-           size: 9,
-           chains: Vec::<Chain>::new(),
-       };
+        let mut b = Board {
+            board_states: HashMap::new(),
+            size: 9,
+            chains: Vec::<Chain>::new(),
+        };
 
-       let m = Move {
-           intersection: (4, 4),
-           stone: Stone::White,
-       };
+        let m = Move {
+            intersection: (4, 4),
+            stone: Stone::White,
+        };
 
-       b.update(m);
+        b.update(m);
 
-       assert_eq!(adjacent_states(&(4, 5), &b)[1], Some(State::Stone(Stone::White)));
+        assert_eq!(
+            adjacent_states(&(4, 5), &b)[1],
+            Some(State::Stone(Stone::White))
+        );
     }
 
     #[test]
