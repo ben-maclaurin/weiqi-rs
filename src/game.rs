@@ -66,9 +66,7 @@ impl<'a> Board<'a> {
             State::Stone(&mov.stone),
         );
 
-        if let Some(mut chain) = can_connect_move(self, &mov) {
-            chain.moves.push(&mov);
-        } else {
+        if !self.can_connect_move(&mov) {
             self.chains.push( Chain {
                 moves: vec![&mov],
             })
@@ -91,21 +89,24 @@ impl<'a> Board<'a> {
         }
         None
     }
-}
 
-pub fn can_connect_move<'a>(board: &mut Board<'a>, mov: &'a Move) -> Option<Chain<'a>> {
-    for mut c in &board.chains {
-        if c.move_is_connected(&mov, &board) {
+    fn can_connect_move(&mut self, mov: &'a Move) -> bool {
+        for c in self.chains.iter_mut() {
+            if c.move_is_connected(&mov, self) {
+                c.moves.push(&mov);
+                return true;
+            }
         }
+        false
     }
-
-    None
 }
+
+
 
 impl<'a> Chain<'a> {
     pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
         for m in &self.moves {
-            for state in adjacent_states(&m.intersection, board) {
+            for state in adjacent_states(&m.intersection, &board) {
                 if let Some(State::Stone(stone)) = state {
                     if &mov.stone == stone {
                         return true;
