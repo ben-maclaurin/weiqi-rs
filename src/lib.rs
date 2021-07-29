@@ -9,6 +9,34 @@ mod tests {
     use std::collections::HashMap;
 
     #[test]
+    fn can_make_group() {
+
+        let mut b = Board {
+            board_states: HashMap::new(),
+            size: 9,
+            chains: Vec::<Chain>::new(),
+        };
+
+        let m = Move {
+            intersection: (1, 1),
+            stone: Stone::Black,
+        };
+
+        b.update(&m);
+
+        let m = Move {
+            intersection: (2, 1),
+            stone: Stone::Black,
+        };
+
+        b.update(&m);
+
+        println!("{:?}", b.chains);
+
+        assert_eq!(b.chains[0].moves.len(), 2);
+    }
+
+    #[test]
     fn cannot_make_suicidal_move() {
         let mut b = Board {
             board_states: HashMap::new(),

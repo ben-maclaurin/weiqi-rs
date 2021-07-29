@@ -37,16 +37,18 @@ type Intersection = (i8, i8);
 type BoardStates<'a> = HashMap<Intersection, State<'a>>;
 type BoardSize = i8;
 
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct Move {
     pub intersection: Intersection,
     pub stone: Stone,
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Chain<'a> {
-    moves: Vec<&'a Move>,
+    pub(crate) moves: Vec<&'a Move>,
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Board<'a> {
     pub board_states: BoardStates<'a>,
     pub size: BoardSize,
@@ -59,6 +61,11 @@ impl<'a> Board<'a> {
             return Outcome::Illegal(illegal);
         }
 
+        self.board_states.insert(
+            (mov.intersection.0, mov.intersection.1),
+            State::Stone(&mov.stone),
+        );
+
         if let Some(mut chain) = can_connect_move(self, &mov) {
             chain.moves.push(&mov);
         } else {
@@ -67,10 +74,6 @@ impl<'a> Board<'a> {
             })
         }
 
-        self.board_states.insert(
-            (mov.intersection.0, mov.intersection.1),
-            State::Stone(&mov.stone),
-        );
         Legal
     }
 
@@ -91,9 +94,8 @@ impl<'a> Board<'a> {
 }
 
 pub fn can_connect_move<'a>(board: &mut Board<'a>, mov: &'a Move) -> Option<Chain<'a>> {
-    for c in &board.chains {
-        if let Some(chain) = c.move_is_connected(&mov, &board) {
-            return Some(chain);
+    for mut c in &board.chains {
+        if c.move_is_connected(&mov, &board) {
         }
     }
 
@@ -101,17 +103,17 @@ pub fn can_connect_move<'a>(board: &mut Board<'a>, mov: &'a Move) -> Option<Chai
 }
 
 impl<'a> Chain<'a> {
-    pub fn move_is_connected(&self, mov: &Move, board: &Board) -> Option<Self> {
+    pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
         for m in &self.moves {
             for state in adjacent_states(&m.intersection, board) {
                 if let Some(State::Stone(stone)) = state {
                     if &mov.stone == stone {
-                        Some(self);
+                        return true;
                     }
                 }
             }
         }
-        None
+        false
     }
 
     pub fn has_liberties(&self, board: &Board) -> bool {
