@@ -113,8 +113,9 @@ impl<'a> Chain<'a> {
     pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
         for m in &self.moves {
             for state in adjacent_states(&m.intersection, &board) {
+                println!("{:?}, {:?}, {:?}", state, &mov, &m);
                 if let Some(State::Stone(stone)) = state {
-                    if &mov.stone == stone {
+                    if &mov == m && stone == &mov.stone {
                         return true;
                     }
                 }
@@ -180,13 +181,14 @@ impl Move {
     }
 }
 
-pub fn adjacent_states<'a>(intersection: &Intersection, board: &'a Board<'a>) -> Vec<Option<State<'a>>> {
-    let mut states = Vec::<Option<State>>::new();
+// TODO Return intersection for adjacent states
+pub fn adjacent_states<'a>(intersection: &Intersection, board: &'a Board<'a>) -> Vec<Option<(State<'a>, Intersection)>> {
+    let mut states = Vec::<Option<(State, Intersection)>>::new();
 
     let operations: Vec<i8> = vec![-1, 1];
 
     for operation in operations {
-        states.push(board.read((intersection.0 + operation, intersection.1)));
+        states.push(board.read((intersection.0 + operation, intersection.1)), (intersection.0 + operation, intersection.1));
         states.push(board.read((intersection.0, intersection.1 + operation)));
     }
 
