@@ -79,14 +79,10 @@ impl<'a> Board<'a> {
             if let Some(index) = chain_index.0 {
                 self.chains[index].moves.push(&mov);
             } else {
-                self.chains.push( Chain {
-                    moves: vec![&mov],
-                })
+                self.chains.push(Chain { moves: vec![&mov] })
             }
         } else {
-            self.chains.push( Chain {
-                moves: vec![&mov],
-            })
+            self.chains.push(Chain { moves: vec![&mov] })
         }
 
         Legal
@@ -106,7 +102,6 @@ impl<'a> Board<'a> {
         }
         None
     }
-
 }
 
 impl<'a> Chain<'a> {
@@ -182,14 +177,23 @@ impl Move {
 }
 
 // TODO Return intersection for adjacent states
-pub fn adjacent_states<'a>(intersection: &Intersection, board: &'a Board<'a>) -> Vec<Option<(State<'a>, Intersection)>> {
-    let mut states = Vec::<Option<(State, Intersection)>>::new();
+pub fn adjacent_states<'a>(
+    intersection: &Intersection,
+    board: &'a Board<'a>,
+) -> Vec<Option<(Option<State<'a>>, Intersection)>> {
+    let mut states = Vec::<Option<(Option<State>, Intersection)>>::new();
 
     let operations: Vec<i8> = vec![-1, 1];
 
     for operation in operations {
-        states.push(board.read((intersection.0 + operation, intersection.1)), (intersection.0 + operation, intersection.1));
-        states.push(board.read((intersection.0, intersection.1 + operation)));
+        states.push(Some((
+            board.read((intersection.0 + operation, intersection.1)),
+            (intersection.0 + operation, intersection.1),
+        )));
+        states.push(Some((
+            board.read((intersection.0, intersection.1 + operation)),
+            (intersection.0, intersection.1 + operation),
+        )));
     }
 
     states

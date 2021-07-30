@@ -10,7 +10,6 @@ mod tests {
 
     #[test]
     fn can_make_group() {
-
         let mut b = Board {
             board_states: HashMap::new(),
             size: 9,
