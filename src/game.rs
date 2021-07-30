@@ -66,7 +66,24 @@ impl<'a> Board<'a> {
             State::Stone(&mov.stone),
         );
 
-        if !self.can_connect_move(&mov) {
+        let mut chain_index: (Option<usize>, bool) = (None, false);
+
+        for (index, c) in self.chains.iter().enumerate() {
+            if c.move_is_connected(&mov, &self) {
+                println!("got called");
+                chain_index = (Some(index), true);
+            }
+        }
+
+        if chain_index.1 {
+            if let Some(index) = chain_index.0 {
+                self.chains[index].moves.push(&mov);
+            } else {
+                self.chains.push( Chain {
+                    moves: vec![&mov],
+                })
+            }
+        } else {
             self.chains.push( Chain {
                 moves: vec![&mov],
             })
@@ -90,18 +107,7 @@ impl<'a> Board<'a> {
         None
     }
 
-    fn can_connect_move(&mut self, mov: &'a Move) -> bool {
-        for c in self.chains.iter_mut() {
-            if c.move_is_connected(&mov, self) {
-                c.moves.push(&mov);
-                return true;
-            }
-        }
-        false
-    }
 }
-
-
 
 impl<'a> Chain<'a> {
     pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
@@ -114,7 +120,7 @@ impl<'a> Chain<'a> {
                 }
             }
         }
-        false
+        return false;
     }
 
     pub fn has_liberties(&self, board: &Board) -> bool {

@@ -31,7 +31,12 @@ mod tests {
 
         b.update(&m);
 
-        println!("{:?}", b.chains);
+        let m = Move {
+            intersection: (7, 7),
+            stone: Stone::Black,
+        };
+
+        b.update(&m);
 
         assert_eq!(b.chains[0].moves.len(), 2);
     }
