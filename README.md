@@ -12,7 +12,7 @@ Go is played on a board with black and white game pieces called stones. Players 
 
 _Definition from Simple English Wikipedia. [Read more](https://simple.wikipedia.org/wiki/Go_(board_game))._
 
-### Usage
+### Getting started
 
 ```rust
 //
@@ -54,4 +54,8 @@ This library is being actively developed. Feel free to contribute and improve.
 
 Project status is as follows:
 
-- [ ] Imp
+- [x] Basic game rules (suicide, repeat moves, board bounds)
+- [x] Chains (or groups)
+- [ ] Capture
+- [ ] Scoring
+- [ ] Examples
