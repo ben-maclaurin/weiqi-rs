@@ -108,11 +108,9 @@ impl<'a> Chain<'a> {
     pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
         for m in &self.moves {
             for state in adjacent_states(&m.intersection, &board) {
-                if let Some(s) = state {
-                    if let Some(State::Stone(stone)) = s.0 {
-                        if stone == &mov.stone && &mov.intersection == &s.1 {
-                            return true;
-                        }
+                if let Some(State::Stone(stone)) = state.0 {
+                    if stone == &mov.stone && &mov.intersection == &state.1 {
+                        return true;
                     }
                 }
             }
@@ -123,10 +121,8 @@ impl<'a> Chain<'a> {
     pub fn has_liberties(&self, board: &Board) -> bool {
         for m in &self.moves {
             for state in adjacent_states(&m.intersection, &board) {
-                if let Some(s) = state {
-                    if let Some(State::Vacant) = s.0 {
-                        return true;
-                    }
+                if let Some(State::Vacant) = state.0 {
+                    return true;
                 }
             }
         }
@@ -165,16 +161,14 @@ impl Move {
         };
 
         for state in adjacent_states(&self.intersection, board) {
-            if let Some(s) = state {
-                match s.0 {
-                    Some(State::Stone(stone)) => {
-                        if stone != &opponent {
-                            return true;
-                        }
+            match state.0 {
+                Some(State::Stone(stone)) => {
+                    if stone != &opponent {
+                        return true;
                     }
-                    _ => return true,
-                };
-            }
+                }
+                _ => return true,
+            };
         }
 
         false
@@ -185,20 +179,20 @@ impl Move {
 pub fn adjacent_states<'a>(
     intersection: &Intersection,
     board: &'a Board<'a>,
-) -> Vec<Option<(Option<State<'a>>, Intersection)>> {
-    let mut states = Vec::<Option<(Option<State>, Intersection)>>::new();
+) -> Vec<(Option<State<'a>>, Intersection)> {
+    let mut states = Vec::<(Option<State>, Intersection)>::new();
 
     let operations: Vec<i8> = vec![-1, 1];
 
     for operation in operations {
-        states.push(Some((
+        states.push((
             board.read((intersection.0 + operation, intersection.1)),
             (intersection.0 + operation, intersection.1),
-        )));
-        states.push(Some((
+        ));
+        states.push((
             board.read((intersection.0, intersection.1 + operation)),
             (intersection.0, intersection.1 + operation),
-        )));
+        ));
     }
 
     states
