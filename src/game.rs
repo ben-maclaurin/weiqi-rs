@@ -75,6 +75,7 @@ impl<'a> Board<'a> {
         }
 
         if chain_index.1 {
+            // Add move to existing chain.
             if let Some(index) = chain_index.0 {
                 self.chains[index].moves.push(&mov);
             } else {
@@ -99,16 +100,22 @@ impl<'a> Board<'a> {
             }
             return Some(State::Vacant);
         }
+        // Return none because intersection is not a valid board position.
         None
     }
 }
 
 impl<'a> Chain<'a> {
     pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
+        // Loop through all chain members.
         for m in &self.moves {
-            for state in adjacent_states(&m.intersection, &board) {
-                if let Some(State::Stone(stone)) = state.0 {
-                    if stone == &mov.stone && &mov.intersection == &state.1 {
+            // Get adjacencies of move's intersection. 
+            for a in adjacencies(&m.intersection, &board) {
+                // Check if adjacent state is a stone.
+                if let Some(State::Stone(stone)) = a.0 {
+                    // Return true only if move's stone and intersection match that of
+                    // adjacent intersection.
+                    if stone == &mov.stone && &mov.intersection == &a.1 {
                         return true;
                     }
                 }
@@ -119,8 +126,8 @@ impl<'a> Chain<'a> {
 
     pub fn has_liberties(&self, board: &Board) -> bool {
         for m in &self.moves {
-            for state in adjacent_states(&m.intersection, &board) {
-                if let Some(State::Vacant) = state.0 {
+            for a in adjacencies(&m.intersection, &board) {
+                if let Some(State::Vacant) = a.0 {
                     return true;
                 }
             }
@@ -159,8 +166,8 @@ impl Move {
             _ => Stone::Black,
         };
 
-        for state in adjacent_states(&self.intersection, board) {
-            match state.0 {
+        for a in adjacencies(&self.intersection, board) {
+            match a.0 {
                 Some(State::Stone(stone)) => {
                     if stone != &opponent {
                         return true;
@@ -174,27 +181,26 @@ impl Move {
     }
 }
 
-// TODO Return intersection for adjacent states
-pub fn adjacent_states<'a>(
+pub fn adjacencies<'a>(
     intersection: &Intersection,
     board: &'a Board<'a>,
 ) -> Vec<(Option<State<'a>>, Intersection)> {
-    let mut states = Vec::<(Option<State>, Intersection)>::new();
+    let mut valid_adjacencies = Vec::<(Option<State>, Intersection)>::new();
 
     let operations: Vec<i8> = vec![-1, 1];
 
     for operation in operations {
-        states.push((
+        valid_adjacencies.push((
             board.read((intersection.0 + operation, intersection.1)),
             (intersection.0 + operation, intersection.1),
         ));
-        states.push((
+        valid_adjacencies.push((
             board.read((intersection.0, intersection.1 + operation)),
             (intersection.0, intersection.1 + operation),
         ));
     }
 
-    states
+    valid_adjacencies
 }
 
 fn is_within_bounds(intersection: &Intersection, size: &BoardSize) -> bool {

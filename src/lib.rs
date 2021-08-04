@@ -5,7 +5,7 @@ mod game;
 mod tests {
     use crate::game::Illegal::OutOfBounds;
     use crate::game::Rule::{RepeatMove, Suicide};
-    use crate::game::{adjacent_states, Board, Chain, Illegal, Move, Outcome, State, Stone};
+    use crate::game::{Board, Chain, Illegal, Move, Outcome, State, Stone, adjacencies};
     use std::collections::HashMap;
 
     #[test]
@@ -123,7 +123,7 @@ mod tests {
         b.update(&m);
 
         assert_eq!(
-            adjacent_states(&(4, 5), &b)[1],
+            adjacencies(&(4, 5), &b)[1],
             (Some(State::Stone(&Stone::White)), (4 as i8, 4 as i8))
         );
     }
