@@ -124,7 +124,7 @@ mod tests {
 
         assert_eq!(
             adjacent_states(&(4, 5), &b)[1],
-            Some(State::Stone(&Stone::White))
+            Some((Some(State::Stone(&Stone::White)), (4 as i8, 4 as i8)))
         );
     }
 

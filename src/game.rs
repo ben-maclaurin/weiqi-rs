@@ -108,10 +108,11 @@ impl<'a> Chain<'a> {
     pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
         for m in &self.moves {
             for state in adjacent_states(&m.intersection, &board) {
-                println!("{:?}, {:?}, {:?}", state, &mov, &m);
-                if let Some(State::Stone(stone)) = state {
-                    if &mov == m && stone == &mov.stone {
-                        return true;
+                if let Some(s) = state {
+                    if let Some(State::Stone(stone)) = s.0 {
+                        if stone == &mov.stone && &mov.intersection == &s.1 {
+                            return true;
+                        }
                     }
                 }
             }
@@ -122,8 +123,10 @@ impl<'a> Chain<'a> {
     pub fn has_liberties(&self, board: &Board) -> bool {
         for m in &self.moves {
             for state in adjacent_states(&m.intersection, &board) {
-                if let Some(State::Vacant) = state {
-                    return true;
+                if let Some(s) = state {
+                    if let Some(State::Vacant) = s.0 {
+                        return true;
+                    }
                 }
             }
         }
@@ -162,14 +165,16 @@ impl Move {
         };
 
         for state in adjacent_states(&self.intersection, board) {
-            match state {
-                Some(State::Stone(stone)) => {
-                    if stone != &opponent {
-                        return true;
+            if let Some(s) = state {
+                match s.0 {
+                    Some(State::Stone(stone)) => {
+                        if stone != &opponent {
+                            return true;
+                        }
                     }
-                }
-                _ => return true,
-            };
+                    _ => return true,
+                };
+            }
         }
 
         false
