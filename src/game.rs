@@ -70,7 +70,6 @@ impl<'a> Board<'a> {
 
         for (index, c) in self.chains.iter().enumerate() {
             if c.move_is_connected(&mov, &self) {
-                println!("got called");
                 chain_index = (Some(index), true);
             }
         }
