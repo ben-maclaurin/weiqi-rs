@@ -12,6 +12,42 @@ Go is played on a board with black and white game pieces called stones. Players 
 
 _Definition from Simple English Wikipedia. [Read more](https://simple.wikipedia.org/wiki/Go_(board_game))._
 
+### Usage
+
+```rust
+//
+// Initialise an empty board. The board size can be any number
+// but the standard sizes are 9x9, 13x13 and 19x19.
+//
+let mut board = Board {
+    board_states: HashMap::new(),
+    size: 19,
+    chains: Vec::<Chain>::new(),
+};
+
+//
+// Place a white stone at intersection (1, 1).
+//
+let first_move = Move {
+    intersection: (1, 1),
+    stone: Stone::White,
+};
+
+//
+// Update the board and handle the result.
+// Output: Some(State::Stone(Stone::White))
+//
+match board.update(&first_move) {
+    Outcome::Legal => {
+        println!("{:?}", &board.read((1, 1)).unwrap());
+    }
+    Outcome::Illegal(violated_rule) => {
+        println!("{:?}", violated_rule);
+        // Do error handling here...
+    }
+};
+```
+
 ### State of Library
 
 This library is being actively developed. Feel free to contribute and improve.
