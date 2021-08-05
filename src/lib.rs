@@ -5,11 +5,59 @@ mod game;
 mod tests {
     use crate::game::Illegal::OutOfBounds;
     use crate::game::Rule::{RepeatMove, Suicide};
-    use crate::game::{Board, Chain, Illegal, Move, Outcome, State, Stone, adjacencies};
+    use crate::game::{adjacencies, Board, Chain, Illegal, Move, Outcome, State, Stone};
     use std::collections::HashMap;
 
     #[test]
-    fn can_make_group() {
+    fn can_capture_group() {
+        let mut b = Board {
+            board_states: HashMap::new(),
+            size: 9,
+            chains: Vec::<Chain>::new(),
+        };
+    }
+
+    #[test]
+    fn can_make_multiple_chains() {
+        let mut b = Board {
+            board_states: HashMap::new(),
+            size: 9,
+            chains: Vec::<Chain>::new(),
+        };
+
+        let m = Move {
+            intersection: (1, 1),
+            stone: Stone::Black,
+        };
+
+        b.update(&m);
+
+        let m = Move {
+            intersection: (2, 1),
+            stone: Stone::Black,
+        };
+
+        b.update(&m);
+
+        let m = Move {
+            intersection: (7, 7),
+            stone: Stone::Black,
+        };
+
+        b.update(&m);
+
+        let m = Move {
+            intersection: (8, 7),
+            stone: Stone::Black,
+        };
+
+        b.update(&m);
+
+        assert_eq!(b.chains.len(), 2);
+    }
+
+    #[test]
+    fn can_make_chain() {
         let mut b = Board {
             board_states: HashMap::new(),
             size: 9,

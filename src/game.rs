@@ -109,7 +109,7 @@ impl<'a> Chain<'a> {
     pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
         // Loop through all chain members.
         for m in &self.moves {
-            // Get adjacencies of move's intersection. 
+            // Get adjacencies of move's intersection.
             for a in adjacencies(&m.intersection, &board) {
                 // Check if adjacent state is a stone.
                 if let Some(State::Stone(stone)) = a.0 {
