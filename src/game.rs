@@ -78,21 +78,15 @@ impl<'a> Board<'a> {
             // Add move to existing chain.
             if let Some(index) = chain_index.0 {
                 self.chains[index].moves.push(&mov);
-            } else {
-                self.chains.push(Chain { moves: vec![&mov] })
             }
         } else {
             self.chains.push(Chain { moves: vec![&mov] })
         }
 
-        println!("GOT HERE");
-
         // Get indexes of dead chains.
         for index in self.get_dead_chains() {
-            println!("GOT HERE 2");
             // Loop through each move in dead chain.
             for m in &self.chains[index].moves {
-                println!("{:?}", m);
                 // Remove old board state.
                 self.board_states.remove(&m.intersection);
                 // Insert modified board state.
@@ -113,9 +107,7 @@ impl<'a> Board<'a> {
         let mut dead_chains: Vec<usize> = vec![];
 
         for (index, chain) in self.chains.iter().enumerate() {
-            println!("DID GET HERE?");
             if chain.has_liberties(&self) != true {
-                println!("DID GET HERE AS WELL");
                 dead_chains.push(index);
             }
         }
@@ -150,6 +142,7 @@ impl<'a> Chain<'a> {
                 if let Some(State::Stone(stone)) = a.0 {
                     // Return true only if move's stone and intersection match that of
                     // adjacent intersection.
+                    println!("{:?}", &self);
                     if stone == &mov.stone && &mov.intersection == &a.1 {
                         println!("{:?} {:?}", stone, &mov.stone);
                         return true;
@@ -163,13 +156,11 @@ impl<'a> Chain<'a> {
     pub fn has_liberties(&self, board: &Board) -> bool {
         for m in &self.moves {
             for a in adjacencies(&m.intersection, &board) {
-                 println!("{:?}, {:?}", a, &self);
                 if let Some(State::Vacant) = a.0 {
                     return true;
                 }
             }
         }
-                    println!("CHAIN HAS NO LIBERTIES, {:?}", &self);
         false
     }
 }
