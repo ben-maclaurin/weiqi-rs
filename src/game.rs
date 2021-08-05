@@ -1,5 +1,5 @@
 use crate::game::Illegal::OutOfBounds;
-use crate::game::Outcome::Legal;
+use crate::game::Interaction::Legal;
 use crate::game::Rule::{RepeatMove, Suicide};
 use std::collections::HashMap;
 
@@ -28,7 +28,7 @@ pub enum Illegal {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum Outcome {
+pub enum Interaction {
     Illegal(Illegal),
     Legal,
 }
@@ -56,9 +56,9 @@ pub struct Board<'a> {
 }
 
 impl<'a> Board<'a> {
-    pub fn update(&mut self, mov: &'a Move) -> Outcome {
-        if let Outcome::Illegal(illegal) = mov.is_prohibited(&self) {
-            return Outcome::Illegal(illegal);
+    pub fn update(&mut self, mov: &'a Move) -> Interaction {
+        if let Interaction::Illegal(illegal) = mov.is_prohibited(&self) {
+            return Interaction::Illegal(illegal);
         }
 
         self.board_states.insert(
@@ -137,17 +137,17 @@ impl<'a> Chain<'a> {
 }
 
 impl Move {
-    pub fn is_prohibited(&self, board: &Board) -> Outcome {
+    pub fn is_prohibited(&self, board: &Board) -> Interaction {
         if !is_within_bounds(&self.intersection, &board.size) {
-            return Outcome::Illegal(OutOfBounds);
+            return Interaction::Illegal(OutOfBounds);
         }
 
         if !self.has_liberties_or_allies(&board) {
-            return Outcome::Illegal(Illegal::Rule(Suicide));
+            return Interaction::Illegal(Illegal::Rule(Suicide));
         }
 
         if self.is_repeat(&board) {
-            return Outcome::Illegal(Illegal::Rule(RepeatMove));
+            return Interaction::Illegal(Illegal::Rule(RepeatMove));
         }
 
         Legal

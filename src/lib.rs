@@ -5,7 +5,7 @@ mod game;
 mod tests {
     use crate::game::Illegal::OutOfBounds;
     use crate::game::Rule::{RepeatMove, Suicide};
-    use crate::game::{adjacencies, Board, Chain, Illegal, Move, Outcome, State, Stone};
+    use crate::game::{adjacencies, Board, Chain, Illegal, Move, Interaction, State, Stone};
     use std::collections::HashMap;
 
     #[test]
@@ -129,7 +129,7 @@ mod tests {
             stone: Stone::Black,
         };
 
-        assert_eq!(b.update(&m), Outcome::Illegal(Illegal::Rule(Suicide)))
+        assert_eq!(b.update(&m), Interaction::Illegal(Illegal::Rule(Suicide)))
     }
 
     #[test]
@@ -152,7 +152,7 @@ mod tests {
             stone: Stone::White,
         };
 
-        assert_eq!(b.update(&m), Outcome::Illegal(Illegal::Rule(RepeatMove)))
+        assert_eq!(b.update(&m), Interaction::Illegal(Illegal::Rule(RepeatMove)))
     }
 
     #[test]
@@ -189,7 +189,7 @@ mod tests {
             stone: Stone::Black,
         };
 
-        assert_eq!(b.update(&m), Outcome::Illegal(OutOfBounds))
+        assert_eq!(b.update(&m), Interaction::Illegal(OutOfBounds))
     }
 
     #[test]
