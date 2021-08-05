@@ -85,7 +85,30 @@ impl<'a> Board<'a> {
             self.chains.push(Chain { moves: vec![&mov] })
         }
 
+        // Get indexes of dead chains.
+        for index in self.get_dead_chains() {
+            // Loop through each move in dead chain.
+            for m in self.chains[index].moves {
+                self.board_states.get_mut(x)
+            }
+            
+            // Remove chain from current list of chains.
+            self.chains.remove(index);
+        }
+
         Legal
+    }
+
+    fn get_dead_chains(&mut self) -> Vec<usize> {
+        let mut dead_chains: Vec<usize> = vec![];
+
+        for (index, chain) in self.chains.iter().enumerate() {
+            if !chain.has_liberties(&self) {
+                dead_chains.push(index);
+            }
+        }
+
+        dead_chains
     }
 
     pub(crate) fn read(&self, intersection: Intersection) -> Option<State> {
