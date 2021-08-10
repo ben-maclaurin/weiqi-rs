@@ -3,5 +3,4 @@
 members = [
     "engine",
     "client",
-    "server",
 ]
