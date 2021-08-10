@@ -2,6 +2,8 @@ use crate::game::Illegal::OutOfBounds;
 use crate::game::Interaction::Legal;
 use crate::game::Rule::{RepeatMove, Suicide};
 use std::collections::HashMap;
+use crate::chain::Chain;
+use crate::utils::adjacencies::adjacencies;
 
 #[derive(Debug, PartialEq)]
 pub enum Stone {
@@ -33,7 +35,7 @@ pub enum Interaction {
     Legal,
 }
 
-type Intersection = (i8, i8);
+pub type Intersection = (i8, i8);
 type BoardStates<'a> = HashMap<Intersection, State<'a>>;
 type BoardSize = i8;
 
@@ -43,10 +45,6 @@ pub struct Move {
     pub stone: Stone,
 }
 
-#[derive(Debug, PartialEq)]
-pub struct Chain<'a> {
-    pub(crate) moves: Vec<&'a Move>,
-}
 
 #[derive(Debug, PartialEq)]
 pub struct Board<'a> {
@@ -132,36 +130,6 @@ impl<'a> Board<'a> {
     }
 }
 
-impl<'a> Chain<'a> {
-    pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
-        // Loop through all chain members.
-        for m in &self.moves {
-            // Get adjacencies of move's intersection.
-            for a in adjacencies(&m.intersection, &board) {
-                // Check if adjacent state is a stone.
-                if let Some(State::Stone(_)) = a.0 {
-                    // Return true only if move's stone and intersection match that of
-                    // adjacent intersection.
-                    if m.stone == mov.stone && a.1 == mov.intersection {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    pub fn has_liberties(&self, board: &Board) -> bool {
-        for m in &self.moves {
-            for a in adjacencies(&m.intersection, &board) {
-                if let Some(State::Vacant) = a.0 {
-                    return true;
-                }
-            }
-        }
-        false
-    }
-}
 
 impl Move {
     pub fn is_prohibited(&self, board: &Board) -> Interaction {
@@ -208,27 +176,6 @@ impl Move {
     }
 }
 
-pub fn adjacencies<'a>(
-    intersection: &Intersection,
-    board: &'a Board<'a>,
-) -> Vec<(Option<State<'a>>, Intersection)> {
-    let mut valid_adjacencies = Vec::<(Option<State>, Intersection)>::new();
-
-    let operations: Vec<i8> = vec![-1, 1];
-
-    for operation in operations {
-        valid_adjacencies.push((
-            board.read((intersection.0 + operation, intersection.1)),
-            (intersection.0 + operation, intersection.1),
-        ));
-        valid_adjacencies.push((
-            board.read((intersection.0, intersection.1 + operation)),
-            (intersection.0, intersection.1 + operation),
-        ));
-    }
-
-    valid_adjacencies
-}
 
 fn is_within_bounds(intersection: &Intersection, size: &BoardSize) -> bool {
     if (intersection.0 < 1 || intersection.1 < 1)

@@ -1,12 +1,16 @@
 #![allow(dead_code)]
 mod game;
+mod chain;
+mod utils;
 
 #[cfg(test)]
 mod tests {
     use crate::game::Illegal::OutOfBounds;
     use crate::game::Rule::{RepeatMove, Suicide};
-    use crate::game::{adjacencies, Board, Chain, Illegal, Move, Interaction, State, Stone};
+    use crate::game::{Board, Illegal, Move, Interaction, State, Stone};
+    use crate::chain::Chain;
     use std::collections::HashMap;
+    use crate::utils::adjacencies::adjacencies;
 
     #[test]
     fn can_capture() {
