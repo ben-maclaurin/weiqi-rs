@@ -57,5 +57,7 @@ Project status is as follows:
 - [x] Basic game rules (suicide, repeat moves, board bounds)
 - [x] Chains (or groups)
 - [x] Capture
+- [ ] Server
 - [ ] Scoring
 - [ ] Examples
+- [ ] Client?
