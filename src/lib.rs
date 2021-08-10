@@ -77,15 +77,15 @@ mod tests {
         b.update(&m);
 
         let m = Move {
-            intersection: (7, 7),
-            stone: Stone::Black,
+            intersection: (2, 2),
+            stone: Stone::White,
         };
 
         b.update(&m);
 
         let m = Move {
-            intersection: (8, 7),
-            stone: Stone::Black,
+            intersection: (2, 3),
+            stone: Stone::White,
         };
 
         b.update(&m);

@@ -77,10 +77,11 @@ impl<'a> Board<'a> {
         if chain_index.1 {
             // Add move to existing chain.
             if let Some(index) = chain_index.0 {
+                println!("OK THIS ALSO FIRED CONNECTED FIRED {:?}", &mov.stone);
                 self.chains[index].moves.push(&mov);
             }
         } else {
-            self.chains.push(Chain { moves: vec![&mov] })
+            self.chains.push(Chain { moves: vec![&mov] });
         }
 
         // Get indexes of dead chains.
@@ -143,8 +144,8 @@ impl<'a> Chain<'a> {
                     // Return true only if move's stone and intersection match that of
                     // adjacent intersection.
                     println!("{:?}", &self);
-                    if stone == &mov.stone && &mov.intersection == &a.1 {
-                        println!("{:?} {:?}", stone, &mov.stone);
+                    if m.stone == mov.stone && a.1 == mov.intersection {
+                        println!("OK CONNECTED FIRED {:?} {:?}", stone, &mov.stone);
                         return true;
                     }
                 }
