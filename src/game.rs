@@ -77,7 +77,6 @@ impl<'a> Board<'a> {
         if chain_index.1 {
             // Add move to existing chain.
             if let Some(index) = chain_index.0 {
-                println!("OK THIS ALSO FIRED CONNECTED FIRED {:?}", &mov.stone);
                 self.chains[index].moves.push(&mov);
             }
         } else {
@@ -140,12 +139,10 @@ impl<'a> Chain<'a> {
             // Get adjacencies of move's intersection.
             for a in adjacencies(&m.intersection, &board) {
                 // Check if adjacent state is a stone.
-                if let Some(State::Stone(stone)) = a.0 {
+                if let Some(State::Stone(_)) = a.0 {
                     // Return true only if move's stone and intersection match that of
                     // adjacent intersection.
-                    println!("{:?}", &self);
                     if m.stone == mov.stone && a.1 == mov.intersection {
-                        println!("OK CONNECTED FIRED {:?} {:?}", stone, &mov.stone);
                         return true;
                     }
                 }
