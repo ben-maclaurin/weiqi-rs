@@ -1,13 +1,8 @@
 use crate::chain::Chain;
-use crate::utils::adjacencies::adjacencies;
+use crate::mov::Interaction::Legal;
+use crate::mov::{Interaction, Intersection, Move, Stone};
 use crate::utils::bounds::is_within_bounds;
 use std::collections::HashMap;
-use crate::mov::{Stone, Intersection, Interaction, Move, Illegal};
-use crate::mov::Interaction::Legal;
-use crate::mov::Rule::RepeatMove;
-use crate::mov::Rule::Suicide;
-use crate::mov::Illegal::OutOfBounds;
-
 
 #[derive(Debug, PartialEq)]
 pub enum State<'a> {
@@ -17,7 +12,6 @@ pub enum State<'a> {
 
 pub type BoardStates<'a> = HashMap<Intersection, State<'a>>;
 pub type BoardSize = i8;
-
 
 #[derive(Debug, PartialEq)]
 pub struct Board<'a> {
@@ -98,50 +92,5 @@ impl<'a> Board<'a> {
         }
         // Return none because intersection is not a valid board position.
         None
-    }
-}
-
-impl Move {
-    pub fn is_prohibited(&self, board: &Board) -> Interaction {
-        if !is_within_bounds(&self.intersection, &board.size) {
-            return Interaction::Illegal(OutOfBounds);
-        }
-
-        if !self.has_liberties_or_allies(&board) {
-            return Interaction::Illegal(Illegal::Rule(Suicide));
-        }
-
-        if self.is_repeat(&board) {
-            return Interaction::Illegal(Illegal::Rule(RepeatMove));
-        }
-
-        Legal
-    }
-
-    pub fn is_repeat(&self, board: &Board) -> bool {
-        if let Some(State::Stone(_)) = &board.read(self.intersection) {
-            return true;
-        }
-        false
-    }
-
-    pub fn has_liberties_or_allies(&self, board: &Board) -> bool {
-        let opponent = match &self.stone {
-            Stone::Black => Stone::White,
-            _ => Stone::Black,
-        };
-
-        for a in adjacencies(&self.intersection, board) {
-            match a.0 {
-                Some(State::Stone(stone)) => {
-                    if stone != &opponent {
-                        return true;
-                    }
-                }
-                _ => return true,
-            };
-        }
-
-        false
     }
 }
