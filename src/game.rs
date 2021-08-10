@@ -1,10 +1,10 @@
+use crate::chain::Chain;
 use crate::game::Illegal::OutOfBounds;
 use crate::game::Interaction::Legal;
 use crate::game::Rule::{RepeatMove, Suicide};
-use std::collections::HashMap;
-use crate::chain::Chain;
 use crate::utils::adjacencies::adjacencies;
 use crate::utils::bounds::is_within_bounds;
+use std::collections::HashMap;
 
 #[derive(Debug, PartialEq)]
 pub enum Stone {
@@ -45,7 +45,6 @@ pub struct Move {
     pub intersection: Intersection,
     pub stone: Stone,
 }
-
 
 #[derive(Debug, PartialEq)]
 pub struct Board<'a> {
@@ -89,12 +88,10 @@ impl<'a> Board<'a> {
                 // Remove old board state.
                 self.board_states.remove(&m.intersection);
                 // Insert modified board state.
-                self.board_states.insert(
-                    (mov.intersection.0, mov.intersection.1),
-                    State::Vacant,
-                );
+                self.board_states
+                    .insert((mov.intersection.0, mov.intersection.1), State::Vacant);
             }
-            
+
             // Remove chain from current list of chains.
             self.chains.remove(index);
         }
@@ -130,7 +127,6 @@ impl<'a> Board<'a> {
         None
     }
 }
-
 
 impl Move {
     pub fn is_prohibited(&self, board: &Board) -> Interaction {
@@ -176,5 +172,3 @@ impl Move {
         false
     }
 }
-
-
