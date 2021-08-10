@@ -4,6 +4,7 @@ use crate::game::Rule::{RepeatMove, Suicide};
 use std::collections::HashMap;
 use crate::chain::Chain;
 use crate::utils::adjacencies::adjacencies;
+use crate::utils::bounds::is_within_bounds;
 
 #[derive(Debug, PartialEq)]
 pub enum Stone {
@@ -36,8 +37,8 @@ pub enum Interaction {
 }
 
 pub type Intersection = (i8, i8);
-type BoardStates<'a> = HashMap<Intersection, State<'a>>;
-type BoardSize = i8;
+pub type BoardStates<'a> = HashMap<Intersection, State<'a>>;
+pub type BoardSize = i8;
 
 #[derive(Debug, PartialEq)]
 pub struct Move {
@@ -177,11 +178,3 @@ impl Move {
 }
 
 
-fn is_within_bounds(intersection: &Intersection, size: &BoardSize) -> bool {
-    if (intersection.0 < 1 || intersection.1 < 1)
-        || (intersection.0 > *size || intersection.1 > *size)
-    {
-        return false;
-    }
-    true
-}
