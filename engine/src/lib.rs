@@ -1,8 +1,8 @@
 #![allow(dead_code)]
-mod chain;
-mod game;
-mod mov;
-mod utils;
+pub mod chain;
+pub mod game;
+pub mod mov;
+pub mod utils;
 
 #[cfg(test)]
 mod tests;
