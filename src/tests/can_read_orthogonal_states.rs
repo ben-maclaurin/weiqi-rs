@@ -1,5 +1,6 @@
 use crate::chain::*;
 use crate::game::*;
+use crate::mov::*;
 use crate::utils::adjacencies::adjacencies;
 use std::collections::HashMap;
 

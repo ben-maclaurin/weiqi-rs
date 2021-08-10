@@ -1,6 +1,7 @@
 use crate::chain::*;
-use crate::game::Rule::*;
+use crate::mov::*;
 use crate::game::*;
+use crate::mov::Rule::Suicide;
 use std::collections::HashMap;
 
 #[test]

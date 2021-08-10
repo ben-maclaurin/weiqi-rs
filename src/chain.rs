@@ -1,5 +1,5 @@
-use crate::game::Move;
 use crate::game::{Board, State};
+use crate::mov::*;
 use crate::utils::adjacencies::adjacencies;
 
 #[derive(Debug, PartialEq)]

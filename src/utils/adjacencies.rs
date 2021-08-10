@@ -1,4 +1,5 @@
-use crate::game::{Board, Intersection, State};
+use crate::game::{Board, State};
+use crate::mov::Intersection;
 
 pub fn adjacencies<'a>(
     intersection: &Intersection,

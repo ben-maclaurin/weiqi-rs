@@ -1,6 +1,7 @@
 use crate::chain::*;
-use crate::game::Illegal::OutOfBounds;
+use crate::mov::*;
 use crate::game::*;
+use crate::mov::Illegal::OutOfBounds;
 use std::collections::HashMap;
 
 #[test]

@@ -1,16 +1,13 @@
 use crate::chain::Chain;
-use crate::game::Illegal::OutOfBounds;
-use crate::game::Interaction::Legal;
-use crate::game::Rule::{RepeatMove, Suicide};
 use crate::utils::adjacencies::adjacencies;
 use crate::utils::bounds::is_within_bounds;
 use std::collections::HashMap;
+use crate::mov::{Stone, Intersection, Interaction, Move, Illegal};
+use crate::mov::Interaction::Legal;
+use crate::mov::Rule::RepeatMove;
+use crate::mov::Rule::Suicide;
+use crate::mov::Illegal::OutOfBounds;
 
-#[derive(Debug, PartialEq)]
-pub enum Stone {
-    Black,
-    White,
-}
 
 #[derive(Debug, PartialEq)]
 pub enum State<'a> {
@@ -18,33 +15,9 @@ pub enum State<'a> {
     Stone(&'a Stone),
 }
 
-#[derive(Debug, PartialEq)]
-pub enum Rule {
-    Suicide,
-    RepeatMove,
-}
-
-#[derive(Debug, PartialEq)]
-pub enum Illegal {
-    Rule(Rule),
-    OutOfBounds,
-}
-
-#[derive(Debug, PartialEq)]
-pub enum Interaction {
-    Illegal(Illegal),
-    Legal,
-}
-
-pub type Intersection = (i8, i8);
 pub type BoardStates<'a> = HashMap<Intersection, State<'a>>;
 pub type BoardSize = i8;
 
-#[derive(Debug, PartialEq)]
-pub struct Move {
-    pub intersection: Intersection,
-    pub stone: Stone,
-}
 
 #[derive(Debug, PartialEq)]
 pub struct Board<'a> {
