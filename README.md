@@ -38,10 +38,10 @@ let first_move = Move {
 // Output: Some(State::Stone(Stone::White))
 //
 match board.update(&first_move) {
-    Outcome::Legal => {
+    Interaction::Legal => {
         println!("{:?}", &board.read((1, 1)).unwrap());
     }
-    Outcome::Illegal(violated_rule) => {
+    Interaction::Illegal(violated_rule) => {
         println!("{:?}", violated_rule);
         // Do error handling here...
     }
@@ -56,6 +56,6 @@ Project status is as follows:
 
 - [x] Basic game rules (suicide, repeat moves, board bounds)
 - [x] Chains (or groups)
-- [ ] Capture
+- [x] Capture
 - [ ] Scoring
 - [ ] Examples
