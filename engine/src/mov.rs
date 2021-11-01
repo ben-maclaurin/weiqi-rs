@@ -68,8 +68,8 @@ impl Move {
             _ => Stone::Black,
         };
 
-        for a in adjacencies(&self.intersection, board) {
-            match a.0 {
+        for (state, _) in adjacencies(&self.intersection, board) {
+            match state {
                 Some(State::Stone(stone)) => {
                     if stone != &opponent {
                         return true;
