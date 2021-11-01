@@ -39,9 +39,11 @@ impl<'a> Board<'a> {
             }
         }
 
-        if chain_index.1 {
+        let (index, found) = chain_index;
+
+        if found {
             // Add move to existing chain.
-            if let Some(index) = chain_index.0 {
+            if let Some(index) = index {
                 self.chains[index].moves.push(&mov);
             }
         } else {
@@ -55,6 +57,7 @@ impl<'a> Board<'a> {
                 // Remove old board state.
                 self.board_states.remove(&m.intersection);
                 // Insert modified board state.
+
                 self.board_states
                     .insert((mov.intersection.0, mov.intersection.1), State::Vacant);
             }
