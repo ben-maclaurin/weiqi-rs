@@ -9,15 +9,19 @@ pub struct Chain<'a> {
 
 impl<'a> Chain<'a> {
     pub fn move_is_connected(&self, mov: &Move, board: &Board) -> bool {
+
         // Loop through all chain members.
         for m in &self.moves {
+
             // Get adjacencies of move's intersection.
-            for a in adjacencies(&m.intersection, &board) {
+            for (state, intersection) in adjacencies(&m.intersection, &board) {
+
                 // Check if adjacent state is a stone.
-                if let Some(State::Stone(_)) = a.0 {
+                if let Some(State::Stone(_)) = state {
+
                     // Return true only if move's stone and intersection match that of
                     // adjacent intersection.
-                    if m.stone == mov.stone && a.1 == mov.intersection {
+                    if m.stone == mov.stone && intersection == mov.intersection {
                         return true;
                     }
                 }
