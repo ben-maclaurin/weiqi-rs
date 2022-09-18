@@ -2,7 +2,7 @@
 
 ![Go players](https://upload.wikimedia.org/wikipedia/commons/e/e3/Korean_Game_from_the_Carpenter_Collection%2C_ca._1910-1920.jpg)
 
-A simple Weiqi (Go) library written in Rust. t
+A simple Weiqi (Go) library written in Rust.
 
 ### What is Go?
 
